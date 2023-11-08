@@ -24,9 +24,7 @@
  */
 package net.runelite.client.plugins.hans_hunter;
 
-import java.awt.Color;
-import java.awt.Dimension;
-import java.awt.Graphics2D;
+import java.awt.*;
 import java.util.Map;
 import javax.inject.Inject;
 import net.runelite.api.Client;
@@ -51,22 +49,25 @@ public class TrapOverlay extends Overlay
 	private static final double TIMER_LOW = 0.25; // When the timer is under a quarter left, if turns red.
 
 	private final Client client;
-	private final HunterPlugin plugin;
-	private final HunterConfig config;
+	private final HansHunterPlugin plugin;
+	private final HansHunterConfig config;
 
-	private Color colorOpen, colorOpenBorder;
-	private Color colorEmpty, colorEmptyBorder;
-	private Color colorFull, colorFullBorder;
+	private Color colorOpen, colorOpenBorder, colorOpenOldBorder;
+	private Color colorEmpty, colorEmptyBorder, colorEmptyOldBorder;
+	private Color colorFull, colorFullBorder, colorFullOldBorder;
 	private Color colorTrans, colorTransBorder;
 
 	@Inject
-	TrapOverlay(Client client, HunterPlugin plugin, HunterConfig config)
+	TrapOverlay(Client client, HansHunterPlugin plugin, HansHunterConfig config)
 	{
 		setPosition(OverlayPosition.DYNAMIC);
 		setLayer(OverlayLayer.ABOVE_SCENE);
 		this.plugin = plugin;
 		this.config = config;
 		this.client = client;
+		colorOpenOldBorder = ColorUtil.fromHex("515904");
+		colorEmptyOldBorder = ColorUtil.fromHex("401002");
+		colorFullOldBorder = ColorUtil.fromHex("02610b");
 	}
 
 	@Override
@@ -99,20 +100,20 @@ public class TrapOverlay extends Overlay
 	 */
 	private void drawTraps(Graphics2D graphics)
 	{
-		for (Map.Entry<WorldPoint, HunterTrap> entry : plugin.getTraps().entrySet())
+		for (Map.Entry<WorldPoint, HansHunterTrap> entry : plugin.getTraps().entrySet())
 		{
-			HunterTrap trap = entry.getValue();
+			HansHunterTrap trap = entry.getValue();
 
 			switch (trap.getState())
 			{
 				case OPEN:
-					drawTimerOnTrap(graphics, trap, colorOpen, colorOpenBorder, colorEmpty, colorOpenBorder);
+					drawTimerOnTrap(graphics, trap, colorOpen, colorOpenBorder, colorEmpty, colorOpenBorder, colorOpenOldBorder);
 					break;
 				case EMPTY:
-					drawTimerOnTrap(graphics, trap, colorEmpty, colorEmptyBorder, colorEmpty, colorEmptyBorder);
+					drawTimerOnTrap(graphics, trap, colorEmpty, colorEmptyBorder, colorEmpty, colorEmptyBorder, colorEmptyOldBorder);
 					break;
 				case FULL:
-					drawTimerOnTrap(graphics, trap, colorFull, colorFullBorder, colorFull, colorFullBorder);
+					drawTimerOnTrap(graphics, trap, colorFull, colorFullBorder, colorFull, colorFullBorder, colorFullOldBorder);
 					break;
 				case TRANSITION:
 					drawCircleOnTrap(graphics, trap, colorTrans, colorTransBorder);
@@ -131,8 +132,9 @@ public class TrapOverlay extends Overlay
 	 * @param fillTimeLow The fill color of the timer when it is low
 	 * @param borderTimeLow The border color of the timer when it is low
 	 */
-	private void drawTimerOnTrap(Graphics2D graphics, HunterTrap trap, Color fill, Color border, Color fillTimeLow, Color borderTimeLow)
+	private void drawTimerOnTrap(Graphics2D graphics, HansHunterTrap trap, Color fill, Color border, Color fillTimeLow, Color borderTimeLow, Color borderOld)
 	{
+
 		if (trap.getWorldLocation().getPlane() != client.getPlane())
 		{
 			return;
@@ -152,8 +154,16 @@ public class TrapOverlay extends Overlay
 		double timeLeft = 1 - trap.getTrapTimeRelative();
 
 		ProgressPieComponent pie = new ProgressPieComponent();
+
+		if(timeLeft <= TIMER_LOW) {
+			pie.setBorderColor(borderTimeLow);
+		} else if(timeLeft <= 0.5) {
+			pie.setBorderColor(borderOld);
+		} else {
+			pie.setBorderColor(border);
+		}
 		pie.setFill(timeLeft > TIMER_LOW ? fill : fillTimeLow);
-		pie.setBorderColor(timeLeft > TIMER_LOW ? border : borderTimeLow);
+		pie.setStroke(new BasicStroke(5));
 		pie.setPosition(loc);
 		pie.setProgress(timeLeft);
 		pie.render(graphics);
@@ -167,7 +177,7 @@ public class TrapOverlay extends Overlay
 	 * @param fill The fill color of the timer
 	 * @param border The border color of the timer
 	 */
-	private void drawCircleOnTrap(Graphics2D graphics, HunterTrap trap, Color fill, Color border)
+	private void drawCircleOnTrap(Graphics2D graphics, HansHunterTrap trap, Color fill, Color border)
 	{
 		if (trap.getWorldLocation().getPlane() != client.getPlane())
 		{

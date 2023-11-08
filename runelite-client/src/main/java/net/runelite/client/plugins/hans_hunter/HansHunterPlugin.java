@@ -53,11 +53,11 @@ import net.runelite.client.ui.overlay.OverlayManager;
 
 @Slf4j
 @PluginDescriptor(
-	name = "Hunter",
+	name = "Hans hunter",
 	description = "Show the state of your traps",
 	tags = {"overlay", "skilling", "timers"}
 )
-public class HunterPlugin extends Plugin
+public class HansHunterPlugin extends Plugin
 {
 	@Inject
 	private Client client;
@@ -72,17 +72,17 @@ public class HunterPlugin extends Plugin
 	private Notifier notifier;
 
 	@Inject
-	private HunterConfig config;
+	private HansHunterConfig config;
 
 	@Getter
-	private final Map<WorldPoint, HunterTrap> traps = new HashMap<>();
+	private final Map<WorldPoint, HansHunterTrap> traps = new HashMap<>();
 
 	private WorldPoint lastTickLocalPlayerLocation;
 
 	@Provides
-  HunterConfig provideConfig(ConfigManager configManager)
+	HansHunterConfig provideConfig(ConfigManager configManager)
 	{
-		return configManager.getConfig(HunterConfig.class);
+		return configManager.getConfig(HansHunterConfig.class);
 	}
 
 	@Override
@@ -104,7 +104,7 @@ public class HunterPlugin extends Plugin
 	{
 		final GameObject gameObject = event.getGameObject();
 		final WorldPoint trapLocation = gameObject.getWorldLocation();
-		final HunterTrap myTrap = traps.get(trapLocation);
+		final HansHunterTrap myTrap = traps.get(trapLocation);
 		final Player localPlayer = client.getLocalPlayer();
 
 		switch (gameObject.getId())
@@ -120,7 +120,7 @@ public class HunterPlugin extends Plugin
 				if (localPlayer.getWorldLocation().distanceTo(trapLocation) <= 2)
 				{
 					log.debug("Trap placed by \"{}\" on {}", localPlayer.getName(), trapLocation);
-					traps.put(trapLocation, new HunterTrap(gameObject));
+					traps.put(trapLocation, new HansHunterTrap(gameObject));
 				}
 				break;
 
@@ -135,7 +135,7 @@ public class HunterPlugin extends Plugin
 					&& trapLocation.distanceTo(lastTickLocalPlayerLocation) == 0)
 				{
 					log.debug("Trap placed by \"{}\" on {}", localPlayer.getName(), localPlayer.getWorldLocation());
-					traps.put(trapLocation, new HunterTrap(gameObject));
+					traps.put(trapLocation, new HansHunterTrap(gameObject));
 				}
 				break;
 
@@ -162,7 +162,7 @@ public class HunterPlugin extends Plugin
 					}
 
 					log.debug("Trap placed by \"{}\" on {} facing {}", localPlayer.getName(), translatedTrapLocation, trapOrientation);
-					traps.put(translatedTrapLocation, new HunterTrap(gameObject));
+					traps.put(translatedTrapLocation, new HansHunterTrap(gameObject));
 				}
 				break;
 
@@ -193,7 +193,7 @@ public class HunterPlugin extends Plugin
 			case ObjectID.LARGE_BOULDER_28831: // Maniacal monkey tail obtained
 				if (myTrap != null)
 				{
-					myTrap.setState(HunterTrap.State.FULL);
+					myTrap.setState(HansHunterTrap.State.FULL);
 					myTrap.resetTimer();
 
 					if (config.maniacalMonkeyNotify() && myTrap.getObjectId() == ObjectID.MONKEY_TRAP)
@@ -213,7 +213,7 @@ public class HunterPlugin extends Plugin
 			case ObjectID.BIRD_SNARE: //Empty box trap
 				if (myTrap != null)
 				{
-					myTrap.setState(HunterTrap.State.EMPTY);
+					myTrap.setState(HansHunterTrap.State.EMPTY);
 					myTrap.resetTimer();
 				}
 
@@ -280,7 +280,7 @@ public class HunterPlugin extends Plugin
 			case ObjectID.MONKEY_TRAP_28829:
 				if (myTrap != null)
 				{
-					myTrap.setState(HunterTrap.State.TRANSITION);
+					myTrap.setState(HansHunterTrap.State.TRANSITION);
 				}
 				break;
 		}
@@ -295,15 +295,15 @@ public class HunterPlugin extends Plugin
 	public void onGameTick(GameTick event)
 	{
 		// Check if all traps are still there, and remove the ones that are not.
-		Iterator<Map.Entry<WorldPoint, HunterTrap>> it = traps.entrySet().iterator();
+		Iterator<Map.Entry<WorldPoint, HansHunterTrap>> it = traps.entrySet().iterator();
 		Tile[][][] tiles = client.getScene().getTiles();
 
-		Instant expire = Instant.now().minus(HunterTrap.TRAP_TIME.multipliedBy(2));
+		Instant expire = Instant.now().minus(HansHunterTrap.TRAP_TIME.multipliedBy(2));
 
 		while (it.hasNext())
 		{
-			Map.Entry<WorldPoint, HunterTrap> entry = it.next();
-			HunterTrap trap = entry.getValue();
+			Map.Entry<WorldPoint, HansHunterTrap> entry = it.next();
+			HansHunterTrap trap = entry.getValue();
 			WorldPoint world = entry.getKey();
 			LocalPoint local = LocalPoint.fromWorld(client, world);
 
@@ -360,8 +360,8 @@ public class HunterPlugin extends Plugin
 				// Case we have notifications enabled and the action was not manual, throw notification
 				if (config.maniacalMonkeyNotify() && trap.getObjectId() == ObjectID.MONKEY_TRAP &&
 					!trap.getState().equals(
-              HunterTrap.State.FULL) && !trap.getState().equals(
-            HunterTrap.State.OPEN))
+              HansHunterTrap.State.FULL) && !trap.getState().equals(
+            HansHunterTrap.State.OPEN))
 				{
 					notifier.notify("The monkey escaped.");
 				}

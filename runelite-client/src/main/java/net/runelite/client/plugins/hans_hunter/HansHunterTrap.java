@@ -34,7 +34,7 @@ import net.runelite.api.coords.WorldPoint;
 /**
  * Wrapper class for a GameObject that represents a hunter trap.
  */
-class HunterTrap
+class HansHunterTrap
 {
 	/**
 	 * A hunter trap stays up 1 minute before collapsing.
@@ -91,7 +91,7 @@ class HunterTrap
 	 *
 	 * @param gameObject The gameobject thats corresponds with this trap.
 	 */
-	HunterTrap(GameObject gameObject)
+	HansHunterTrap(GameObject gameObject)
 	{
 		this.state = State.OPEN;
 		this.placedOn = Instant.now();
