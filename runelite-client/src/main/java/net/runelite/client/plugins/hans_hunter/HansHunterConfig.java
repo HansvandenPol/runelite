@@ -47,6 +47,30 @@ public interface HansHunterConfig extends Config
 
 	@Alpha
 	@ConfigItem(
+			position = 1,
+			keyName = "hexColorOpenOld",
+			name = "Open old",
+			description = "Color of old trap"
+	)
+	default Color getOpenTrapOld()
+	{
+		return Color.YELLOW;
+	}
+
+	@Alpha
+	@ConfigItem(
+			position = 1,
+			keyName = "hexColorOpenOlder",
+			name = "Open older",
+			description = "Color of older trap"
+	)
+	default Color getOpenTrapOlder()
+	{
+		return Color.YELLOW;
+	}
+
+	@Alpha
+	@ConfigItem(
 		position = 2,
 		keyName = "hexColorFullTrap",
 		name = "Full trap",
@@ -59,12 +83,60 @@ public interface HansHunterConfig extends Config
 
 	@Alpha
 	@ConfigItem(
+			position = 2,
+			keyName = "hexColorFullOld",
+			name = "Full old",
+			description = "Color of full old trap timer"
+	)
+	default Color getFullTrapOld()
+	{
+		return Color.GREEN;
+	}
+
+	@Alpha
+	@ConfigItem(
+			position = 2,
+			keyName = "hexColorFullOlder",
+			name = "Full older",
+			description = "Color of full older trap timer"
+	)
+	default Color getFullTrapOlder()
+	{
+		return Color.GREEN;
+	}
+
+	@Alpha
+	@ConfigItem(
 		position = 3,
 		keyName = "hexColorEmptyTrap",
 		name = "Empty trap",
 		description = "Color of empty trap timer"
 	)
 	default Color getEmptyTrapColor()
+	{
+		return Color.RED;
+	}
+
+	@Alpha
+	@ConfigItem(
+			position = 3,
+			keyName = "hexColorEmptyOld",
+			name = "Empty old",
+			description = "Color of empty old trap timer"
+	)
+	default Color getEmptyTrapOld()
+	{
+		return Color.RED;
+	}
+
+	@Alpha
+	@ConfigItem(
+			position = 3,
+			keyName = "hexColorEmptyOlder",
+			name = "Empty older",
+			description = "Color of empty older trap timer"
+	)
+	default Color getEmptyTrapOlder()
 	{
 		return Color.RED;
 	}

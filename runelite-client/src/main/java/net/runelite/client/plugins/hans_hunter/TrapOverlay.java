@@ -52,10 +52,10 @@ public class TrapOverlay extends Overlay
 	private final HansHunterPlugin plugin;
 	private final HansHunterConfig config;
 
-	private Color colorOpen, colorOpenBorder, colorOpenOldBorder;
-	private Color colorEmpty, colorEmptyBorder, colorEmptyOldBorder;
-	private Color colorFull, colorFullBorder, colorFullOldBorder;
-	private Color colorTrans, colorTransBorder;
+	private Color colorOpen, colorOpenOld, colorOpenOlder;
+	private Color colorEmpty, colorEmptyOld, colorEmptyOlder;
+	private Color colorFull, colorFullOld, colorFullOlder;
+	private Color colorTrans;
 
 	@Inject
 	TrapOverlay(Client client, HansHunterPlugin plugin, HansHunterConfig config)
@@ -65,9 +65,6 @@ public class TrapOverlay extends Overlay
 		this.plugin = plugin;
 		this.config = config;
 		this.client = client;
-		colorOpenOldBorder = ColorUtil.fromHex("515904");
-		colorEmptyOldBorder = ColorUtil.fromHex("401002");
-		colorFullOldBorder = ColorUtil.fromHex("02610b");
 	}
 
 	@Override
@@ -82,14 +79,16 @@ public class TrapOverlay extends Overlay
 	 */
 	public void updateConfig()
 	{
-		colorEmptyBorder = config.getEmptyTrapColor();
-		colorEmpty = ColorUtil.colorWithAlpha(colorEmptyBorder, (int)(colorEmptyBorder.getAlpha() / 2.5));
-		colorFullBorder = config.getFullTrapColor();
-		colorFull = ColorUtil.colorWithAlpha(colorFullBorder, (int)(colorFullBorder.getAlpha() / 2.5));
-		colorOpenBorder = config.getOpenTrapColor();
-		colorOpen = ColorUtil.colorWithAlpha(colorOpenBorder, (int)(colorOpenBorder.getAlpha() / 2.5));
-		colorTransBorder = config.getTransTrapColor();
-		colorTrans = ColorUtil.colorWithAlpha(colorTransBorder, (int)(colorTransBorder.getAlpha() / 2.5));
+		colorEmpty = config.getEmptyTrapColor();
+		colorEmptyOld = config.getEmptyTrapOld();
+		colorEmptyOlder = config.getEmptyTrapOlder();
+		colorFull = config.getFullTrapColor();
+		colorFullOld = config.getFullTrapOld();
+		colorFullOlder = config.getFullTrapOlder();
+		colorOpen = config.getOpenTrapColor();
+		colorOpenOld = config.getOpenTrapOld();
+		colorOpenOlder = config.getOpenTrapOlder();
+		colorTrans = config.getTransTrapColor();
 	}
 
 	/**
@@ -107,16 +106,16 @@ public class TrapOverlay extends Overlay
 			switch (trap.getState())
 			{
 				case OPEN:
-					drawTimerOnTrap(graphics, trap, colorOpen, colorOpenBorder, colorEmpty, colorOpenBorder, colorOpenOldBorder);
+					drawTimerOnTrap(graphics, trap, colorOpen, colorOpenOld, colorOpenOlder);
 					break;
 				case EMPTY:
-					drawTimerOnTrap(graphics, trap, colorEmpty, colorEmptyBorder, colorEmpty, colorEmptyBorder, colorEmptyOldBorder);
+					drawTimerOnTrap(graphics, trap, colorEmpty, colorEmptyOld, colorEmptyOlder);
 					break;
 				case FULL:
-					drawTimerOnTrap(graphics, trap, colorFull, colorFullBorder, colorFull, colorFullBorder, colorFullOldBorder);
+					drawTimerOnTrap(graphics, trap, colorFull, colorFullOld, colorFullOlder);
 					break;
 				case TRANSITION:
-					drawCircleOnTrap(graphics, trap, colorTrans, colorTransBorder);
+					drawCircleOnTrap(graphics, trap, colorTrans, colorTrans);
 					break;
 			}
 		}
@@ -128,11 +127,8 @@ public class TrapOverlay extends Overlay
 	 * @param graphics
 	 * @param trap The trap on which the timer needs to be drawn
 	 * @param fill The fill color of the timer
-	 * @param border The border color of the timer
-	 * @param fillTimeLow The fill color of the timer when it is low
-	 * @param borderTimeLow The border color of the timer when it is low
 	 */
-	private void drawTimerOnTrap(Graphics2D graphics, HansHunterTrap trap, Color fill, Color border, Color fillTimeLow, Color borderTimeLow, Color borderOld)
+	private void drawTimerOnTrap(Graphics2D graphics, HansHunterTrap trap, Color fill, Color fillOld, Color fillOlder)
 	{
 
 		if (trap.getWorldLocation().getPlane() != client.getPlane())
@@ -156,14 +152,12 @@ public class TrapOverlay extends Overlay
 		ProgressPieComponent pie = new ProgressPieComponent();
 
 		if(timeLeft <= TIMER_LOW) {
-			pie.setBorderColor(borderTimeLow);
+			pie.setFill(fillOlder);
 		} else if(timeLeft <= 0.5) {
-			pie.setBorderColor(borderOld);
+			pie.setFill(fillOld);
 		} else {
-			pie.setBorderColor(border);
+			pie.setFill(fill);
 		}
-		pie.setFill(timeLeft > TIMER_LOW ? fill : fillTimeLow);
-		pie.setStroke(new BasicStroke(5));
 		pie.setPosition(loc);
 		pie.setProgress(timeLeft);
 		pie.render(graphics);
